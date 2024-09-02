@@ -1,0 +1,53 @@
+// src/styles/themes.ts
+export const themes = {
+  default: {
+    background: 'linear-gradient(135deg, #0A1F44 0%, #4ADEDE 100%)',
+    text: '#F0F2F5',
+    clockFace: '#00CFFD',
+    clockFrame: '#0A1F44',
+    hourMarker: '#9B51E0',
+    hourHand: '#F0F2F5',
+    navIcon: '#F0F2F5',
+    companionBubble: 'rgba(255, 255, 255, 0.1)',
+    centerPoint: '#FF6B35',
+    scheduleIndicator: '#2ECC71',
+  },
+  morning: {
+    background: 'linear-gradient(135deg, #0A1F44 0%, #FFA500 100%)',
+    text: '#F0F2F5',
+    clockFace: '#4ADEDE',
+    clockFrame: '#0A1F44',
+    hourMarker: '#9B51E0',
+    hourHand: '#F0F2F5',
+    navIcon: '#F0F2F5',
+    companionBubble: 'rgba(255, 255, 255, 0.1)',
+    centerPoint: '#FF6B35',
+    scheduleIndicator: '#2ECC71',
+  },
+  evening: {
+    background: 'linear-gradient(135deg, #0A1F44 0%, #FF6B35 100%)',
+    text: '#F0F2F5',
+    clockFace: '#00CFFD',
+    clockFrame: '#0A1F44',
+    hourMarker: '#9B51E0',
+    hourHand: '#F0F2F5',
+    navIcon: '#F0F2F5',
+    companionBubble: 'rgba(255, 255, 255, 0.1)',
+    centerPoint: '#4ADEDE',
+    scheduleIndicator: '#2ECC71',
+  },
+  night: {
+    background: 'linear-gradient(135deg, #0A1F44 0%, #37474F 100%)',
+    text: '#F0F2F5',
+    clockFace: '#00CFFD',
+    clockFrame: '#0A1F44',
+    hourMarker: '#9B51E0',
+    hourHand: '#F0F2F5',
+    navIcon: '#F0F2F5',
+    companionBubble: 'rgba(255, 255, 255, 0.1)',
+    centerPoint: '#FF6B35',
+    scheduleIndicator: '#2ECC71',
+  },
+};
+
+export type Theme = typeof themes.default;
