@@ -10,7 +10,7 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ theme }) => {
   return (
     <FooterWrapper>
-      <FooterText>© 2024 Futuristic Clock App</FooterText>
+      <FooterText>© 2024 Time Sphere</FooterText>
     </FooterWrapper>
   );
 };

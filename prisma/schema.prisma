@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -27,6 +21,7 @@ model User {
   companionState    CompanionState?  // No need to define fields and references here
   companionStateId  String?          @db.ObjectId
   leaderboards      Leaderboard[]    @relation("UserLeaderboards")
+  uploads           Upload[]         // New field for user-generated content
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 }
@@ -61,8 +56,20 @@ model Task {
   completed   Boolean    @default(false)
   schedule    Schedule   @relation(fields: [scheduleId], references: [id])
   scheduleId  String     @db.ObjectId
+  uploads     Upload[]   // New field for uploads linked to tasks
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @default(now())
+}
+
+model Upload {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  url         String     // URL of the uploaded content
+  type        String     // Type of content (e.g., image, video)
+  taskId      String     @db.ObjectId
+  task        Task       @relation(fields: [taskId], references: [id])
+  userId      String     @db.ObjectId
+  user        User       @relation(fields: [userId], references: [id])
+  createdAt   DateTime   @default(now())
 }
 
 model Reward {

@@ -1,4 +1,3 @@
-//type.d.ts
 import { Prisma } from "@prisma/client";
 
 export type User = {
@@ -14,6 +13,7 @@ export type User = {
   companionState?: CompanionState | null;
   companionStateId?: string | null;
   leaderboards: Leaderboard[];
+  uploads: Upload[]; // New field for user-generated content
   createdAt: Date;
   updatedAt: Date;
 };
@@ -49,8 +49,20 @@ export type Task = {
   completed: boolean;
   scheduleId: string;
   schedule: Schedule;
+  uploads: Upload[]; // New field for uploads linked to tasks
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type Upload = {
+  id: string;
+  url: string;
+  type: string;
+  taskId: string;
+  task: Task;
+  userId: string;
+  user: User;
+  createdAt: Date;
 };
 
 export type Reward = {
@@ -98,6 +110,7 @@ declare module "@prisma/client" {
     companionState: Prisma.CompanionStateDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>;
     schedule: Prisma.ScheduleDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>;
     task: Prisma.TaskDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>;
+    upload: Prisma.UploadDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>;
     reward: Prisma.RewardDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>;
     badge: Prisma.BadgeDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>;
     aiRecommendation: Prisma.AIRecommendationDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>;
