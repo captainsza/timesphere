@@ -13,6 +13,7 @@ import GlassModal from '../GlassModal';
 import { useMediaQuery } from 'react-responsive';
 import { AIRecommendation, Schedule, Task } from '@/type';
 import { motion } from 'framer-motion';
+import TaskCompletionModal from '../GlassModal/CompletionModal';
 
 const HomePage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -21,6 +22,7 @@ const HomePage = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [recommendations, setRecommendations] = useState<AIRecommendation[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [completedTask, setCompletedTask] = useState<Task | null>(null);
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { playSound } = useAudio();
   const { user, updateUserPoints } = useUser();
@@ -119,6 +121,9 @@ const HomePage = () => {
       if (response.ok) {
         const updatedTask = await response.json();
         setTasks(tasks.map(task => task.id === taskId ? updatedTask : task));
+        if (updatedTask.completed) {
+          setCompletedTask(updatedTask);
+        }
       }
     } catch (error) {
       console.error('Error updating task:', error);
@@ -137,6 +142,32 @@ const HomePage = () => {
       }
     } catch (error) {
       console.error('Error deleting task:', error);
+    }
+  };
+
+  const handleUpload = async (file: File) => {
+    if (!completedTask) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('taskId', completedTask.id);
+
+    try {
+      const response = await fetch('/api/uploads', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const upload = await response.json();
+        console.log('File uploaded successfully:', upload);
+        // You might want to update the task or user state here
+      } else {
+        throw new Error('Failed to upload file');
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw error;
     }
   };
 
@@ -176,6 +207,14 @@ const HomePage = () => {
           onDeleteTask={handleDeleteTask}
           onClose={() => setModalOpen(false)}
           theme={activeTheme}
+        />
+      )}
+
+      {completedTask && (
+        <TaskCompletionModal
+          task={completedTask}
+          onClose={() => setCompletedTask(null)}
+          onUpload={handleUpload}
         />
       )}
     </StyledHomePage>

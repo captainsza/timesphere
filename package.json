@@ -14,10 +14,13 @@
         "@emotion/styled": "^11.13.0",
         "@mui/material": "^6.0.1",
         "@prisma/client": "^5.19.0",
+        "@radix-ui/react-slot": "^1.1.0",
         "@react-three/drei": "^9.111.5",
         "@react-three/fiber": "^8.17.6",
         "@types/three": "^0.168.0",
         "bcryptjs": "^2.4.3",
+        "class-variance-authority": "^0.7.0",
+        "cloudinary": "^2.4.0",
         "framer-motion": "^11.3.31",
         "framer-motion-3d": "^11.3.31",
         "jose": "^5.8.0",
@@ -31,8 +34,10 @@
         "react-lottie": "^1.2.4",
         "react-responsive": "^10.0.0",
         "styled-components": "^6.1.13",
+        "tailwind-merge": "^2.5.2",
         "three": "^0.168.0",
-        "three-stdlib": "^2.32.2"
+        "three-stdlib": "^2.32.2",
+        "uuid": "^10.0.0"
     },
     "devDependencies": {
         "@types/bcryptjs": "^2.4.6",
@@ -41,6 +46,7 @@
         "@types/react": "^18",
         "@types/react-dom": "^18",
         "@types/react-lottie": "^1.2.10",
+        "@types/uuid": "^10.0.0",
         "eslint": "^8",
         "eslint-config-next": "14.2.7",
         "postcss": "^8",

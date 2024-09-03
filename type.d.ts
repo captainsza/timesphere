@@ -4,6 +4,7 @@ export type User = {
   id: string;
   username: string;
   password: string;
+  email: string;
   schedules: Schedule[];
   points: number;
   badges: Badge[];

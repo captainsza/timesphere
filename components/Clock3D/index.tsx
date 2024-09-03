@@ -93,13 +93,13 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
         <meshBasicMaterial color={theme.clockFrame} transparent opacity={0.5} />
       </mesh>
 
-      {/* Hour markers */}
+      {/* Updated Hour markers */}
       {[...Array(12)].map((_, i) => {
-        const angle = (i / 12) * Math.PI * 2;
+        const angle = ((i + 1) / 12) * Math.PI * 2;
         const x = Math.sin(angle) * 3.5;
         const y = Math.cos(angle) * 3.5;
         return (
-          <group key={i} position={[x, y, 0.2]} onClick={() => onHourClick(i + 1)}>
+          <group key={i} position={[x, y, 0.2]} onClick={() => onHourClick((i + 1) % 12 || 12)}>
             <mesh>
               <boxGeometry args={[0.1, 0.5, 0.1]} />
               <meshStandardMaterial color={theme.hourMarker} metalness={0.8} roughness={0.2} />
@@ -112,7 +112,7 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
               anchorY="middle"
               font="/assets/fonts/NEON ABSOLUTE SANS1.ttf"
             >
-              {i + 1}
+              {(i + 1) % 12 || 12}
             </Text>
           </group>
         );
