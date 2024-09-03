@@ -21,8 +21,8 @@ export const ModalContainer = styled(motion.div)`
   border-radius: 20px;
   padding: 20px;
   width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
+  max-width: 700px;
+  max-height:100vh;
   overflow-y: auto;
   backdrop-filter: blur(20px);
   border: 1px solid ${({ theme }) => theme.clockFrame};
@@ -31,6 +31,7 @@ export const ModalContainer = styled(motion.div)`
   @media (max-width: 768px) {
     width: 95%;
     padding: 15px;
+    max-width:95%;
   }
 `;
 
@@ -226,10 +227,14 @@ export const TaskItem = styled.div`
   }
 `;
 
-export const TaskIcon = styled.img`
+export const TaskIcon = styled.div`
   width: 30px;
   height: 30px;
   margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
 `;
 
 export const TaskContent = styled.div`
@@ -311,4 +316,174 @@ export const StyledInput = styled(Input)`
   border-radius: 5px;
   border: 1px solid #ccc;
   width: 100%;
+`;
+export const EditButton = styled(Button)`
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: ${({ theme }) => theme.clockFrame};
+  color: ${({ theme }) => theme.text};
+  font-size: 0.9rem;
+  text-transform: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: ${({ theme }) => theme.scheduleIndicator};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+export const EmojiPickerContainer = styled(motion.div)`
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 300px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  
+  @media (max-width: 768px) {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+  }
+
+  .emoji-picker-react {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .emoji-group:before {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(5px);
+  }
+`;
+
+export const EmojiButton = styled(Button)`
+  padding: 5px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.clockFrame};
+  color: ${({ theme }) => theme.text};
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.scheduleIndicator};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+export const ScheduleCreationContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  border: 1px solid ${({ theme }) => theme.clockFrame};
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+  }
+`;
+
+export const ScheduleInput = styled.input`
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.clockFrame};
+  background: rgba(255, 255, 255, 0.2);
+  color: ${({ theme }) => theme.text};
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.scheduleIndicator};
+    box-shadow: 0 0 0 2px ${({ theme }) => `${theme.scheduleIndicator}40`};
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => `${theme.text}80`};
+  }
+`;
+
+export const IconSelect = styled.select`
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.clockFrame};
+  background: rgba(255, 255, 255, 0.2);
+  color: ${({ theme }) => theme.text};
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.scheduleIndicator};
+    box-shadow: 0 0 0 2px ${({ theme }) => `${theme.scheduleIndicator}40`};
+  }
+
+  option {
+    background: ${({ theme }) => theme.clockFace};
+    color: ${({ theme }) => theme.text};
+  }
+
+  @media (min-width: 768px) {
+    width: 80px;
+  }
+`;
+
+export const TextArea = styled.textarea`
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.clockFrame};
+  background: rgba(255, 255, 255, 0.2);
+  color: ${({ theme }) => theme.text};
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.scheduleIndicator};
+    box-shadow: 0 0 0 2px ${({ theme }) => `${theme.scheduleIndicator}40`};
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => `${theme.text}80`};
+  }
+`;
+
+export const ToggleButton = styled.button<{ active: boolean }>`
+  padding: 10px 20px;
+  background-color: ${({ active }) => active ? '#6a11cb' : '#ccc'};
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: ${({ active }) => active ? '#4c0ba9' : '#aaa'};
+  }
 `;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Home, Calendar, Settings, Award, LogIn, LogOut, User } from 'lucide-react';
@@ -8,6 +8,7 @@ import { Schedule, Task } from '@/type';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getAuthHeader } from '@/lib/utils/auth';
 
 interface NavigationProps {
   theme?: typeof themes.default;
@@ -18,21 +19,40 @@ const Navigation: React.FC<NavigationProps> = ({ theme = themes.default }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const { user, logout } = useAuth();
+  const [currentTime, setCurrentTime] = useState(new Date());
   const router = useRouter();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    if (user) {
+      fetchTasks();
+      fetchSchedules();
+    }
+
+    return () => clearInterval(timer);
+  }, [user]);
 
   const handleAddTask = (task: Task) => {
     setTasks([...tasks, task]);
+  };
+
+  const handleAddSchedule = (schedule: Schedule) => {
+    setSchedules([...schedules, schedule]);
   };
 
   const handleLogout = async () => {
     await logout();
     router.push('/login');
   };
+
   const fetchTasks = async () => {
     try {
       const response = await fetch('/api/tasks', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeader(),
         credentials: 'include',
       });
       if (response.ok) {
@@ -48,7 +68,7 @@ const Navigation: React.FC<NavigationProps> = ({ theme = themes.default }) => {
     try {
       const response = await fetch('/api/schedules', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeader(),
         credentials: 'include',
       });
       if (response.ok) {
@@ -60,13 +80,11 @@ const Navigation: React.FC<NavigationProps> = ({ theme = themes.default }) => {
     }
   };
 
-
-
   const handleUpdateTask = async (taskId: string, updates: Partial<Task>) => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
         body: JSON.stringify(updates),
         credentials: 'include',
       });
@@ -83,7 +101,7 @@ const Navigation: React.FC<NavigationProps> = ({ theme = themes.default }) => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
         credentials: 'include',
       });
       if (response.ok) {
@@ -93,6 +111,7 @@ const Navigation: React.FC<NavigationProps> = ({ theme = themes.default }) => {
       console.error('Error deleting task:', error);
     }
   };
+
   return (
     <>
       <Nav>
@@ -141,12 +160,13 @@ const Navigation: React.FC<NavigationProps> = ({ theme = themes.default }) => {
       
       {isModalOpen && (
         <GlassModal
-        tasks={tasks}
-        schedules={schedules}
-        onAddTask={handleAddTask}
-        onUpdateTask={handleUpdateTask}
-        onDeleteTask={handleDeleteTask}
-        onClose={() => setModalOpen(false)}
+          tasks={tasks}
+          schedules={schedules}
+          onAddTask={handleAddTask}
+          onAddSchedule={handleAddSchedule}
+          onUpdateTask={handleUpdateTask}
+          onDeleteTask={handleDeleteTask}
+          onClose={() => setModalOpen(false)}
         />
       )}
 

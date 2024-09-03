@@ -1,12 +1,19 @@
-import React, { useRef, useMemo, useEffect } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { Text, useTexture } from '@react-three/drei';
+import React, { useRef, useMemo, useEffect, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Html, OrbitControls, Text, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
+import Lottie from 'react-lottie-player';
 import type { Schedule } from '@/type';
+import { Theme } from '@/styles/themes';
+
+import morningAnimation from '@/public/assets/lottie/morning.json';
+import dayAnimation from '@/public/assets/lottie/day.json';
+import eveningAnimation from '@/public/assets/lottie/evening.json';
+import nightAnimation from '@/public/assets/lottie/night.json';
 
 interface Clock3DProps {
   time: Date;
-  theme: any;
+  theme: Theme;
   onHourClick: (hour: number) => void;
   schedules: Schedule[];
 }
@@ -15,8 +22,7 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
   const clockRef = useRef<THREE.Group>(null);
   const hourHandRef = useRef<THREE.Group>(null);
   const centerPointRef = useRef<THREE.Group>(null);
-  const { size } = useThree();
-
+  const { size, camera } = useThree();
   const scale = useMemo(() => Math.min(size.width, size.height) / 1000, [size]);
 
   // Load textures
@@ -63,9 +69,43 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
     </group>
   );
 
+  const getLottieAnimationForCurrentTime = () => {
+    const currentHour = time.getHours();
+    if (currentHour >= 6 && currentHour < 12) {
+      return morningAnimation;
+    } else if (currentHour >= 12 && currentHour < 18) {
+      return dayAnimation;
+    } else if (currentHour >= 18 && currentHour < 22) {
+      return eveningAnimation;
+    } else {
+      return nightAnimation;
+    }
+  };
+
+  const createLottieAnimation = () => {
+    const lottieAnimation = getLottieAnimationForCurrentTime();
+    const lottieSize = Math.min(size.width, size.height) * 0.25; // Increased size by 20%
+  
+    return (
+      <Html
+        position={[-2, 3, 0.2]} // Moved slightly right and lower
+        style={{
+          width: `${lottieSize}px`,
+          height: `${lottieSize}px`,
+          transform: 'translate(50%, -50%)', // Adjust position relative to its center
+        }}
+      >
+        <Lottie
+          loop
+          animationData={lottieAnimation}
+          play
+          style={{ width: '100%', height: '100%' }}
+        />
+      </Html>
+    );
+  };
   return (
     <group ref={clockRef} scale={[scale, scale, scale]}>
-      {/* Clock face */}
       <mesh position={[0, 0, 0]}>
         <circleGeometry args={[4, 64]} />
         <meshStandardMaterial
@@ -76,7 +116,6 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
         />
       </mesh>
 
-      {/* Clock frame */}
       <mesh position={[0, 0, -0.1]}>
         <ringGeometry args={[4, 4.3, 64]} />
         <meshStandardMaterial
@@ -87,19 +126,20 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
         />
       </mesh>
 
-      {/* Outer ring with glow effect */}
       <mesh position={[0, 0, 0.1]}>
         <ringGeometry args={[4.1, 4.3, 64]} />
         <meshBasicMaterial color={theme.clockFrame} transparent opacity={0.5} />
       </mesh>
 
-      {/* Updated Hour markers */}
+      {/* Restore hour markers */}
       {[...Array(12)].map((_, i) => {
         const angle = ((i + 1) / 12) * Math.PI * 2;
         const x = Math.sin(angle) * 3.5;
         const y = Math.cos(angle) * 3.5;
+        const position = new THREE.Vector3(x, y, 0.2);
+        
         return (
-          <group key={i} position={[x, y, 0.2]} onClick={() => onHourClick((i + 1) % 12 || 12)}>
+          <group key={i} position={position} onClick={() => onHourClick((i + 1) % 12 || 12)}>
             <mesh>
               <boxGeometry args={[0.1, 0.5, 0.1]} />
               <meshStandardMaterial color={theme.hourMarker} metalness={0.8} roughness={0.2} />
@@ -118,10 +158,8 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
         );
       })}
 
-      {/* Hour hand */}
       {createClockHand()}
 
-      {/* Center point */}
       <group ref={centerPointRef} position={[0, 0, 0.5]}>
         <mesh>
           <sphereGeometry args={[0.3, 32, 32]} />
@@ -130,7 +168,6 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
         <pointLight color={theme.centerPoint} intensity={1} distance={1} />
       </group>
 
-      {/* Schedule indicators */}
       {schedules.map((schedule, index) => {
         const angle = (schedule.hour / 12) * Math.PI * 2;
         const x = Math.sin(angle) * 3.8;
@@ -158,7 +195,6 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
         );
       })}
 
-      {/* Holographic effect */}
       <mesh position={[0, 0, -0.2]}>
         <circleGeometry args={[4.5, 64]} />
         <meshBasicMaterial
@@ -168,6 +204,8 @@ const Clock3D: React.FC<Clock3DProps> = ({ time, theme, onHourClick, schedules }
           blending={THREE.AdditiveBlending}
         />
       </mesh>
+
+      {createLottieAnimation()}
     </group>
   );
 };

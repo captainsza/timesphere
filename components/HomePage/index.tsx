@@ -14,6 +14,7 @@ import { useMediaQuery } from 'react-responsive';
 import { AIRecommendation, Schedule, Task } from '@/type';
 import { motion } from 'framer-motion';
 import TaskCompletionModal from '../GlassModal/CompletionModal';
+import { getAuthHeader } from '@/lib/utils/auth';
 
 const HomePage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -53,7 +54,9 @@ const HomePage = () => {
       setActiveTheme(themes.night);
     }
   };
-
+  const handleAddSchedule = (schedule: Schedule) => {
+    setSchedules([...schedules, schedule]);
+  };
   const handleClockInteraction = (hour: number) => {
     playSound('clockClick');
     console.log(`Interacted with hour: ${hour}`);
@@ -65,7 +68,7 @@ const HomePage = () => {
     try {
       const response = await fetch('/api/tasks', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeader(),
         credentials: 'include',
       });
       if (response.ok) {
@@ -81,11 +84,12 @@ const HomePage = () => {
     try {
       const response = await fetch('/api/schedules', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeader(),
         credentials: 'include',
       });
       if (response.ok) {
         const schedulesData = await response.json();
+        console.log('Fetched schedules:', schedulesData); // Add this line
         setSchedules(schedulesData);
       }
     } catch (error) {
@@ -97,7 +101,7 @@ const HomePage = () => {
     try {
       const response = await fetch('/api/tasks', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers:getAuthHeader(),
         body: JSON.stringify(task),
         credentials: 'include',
       });
@@ -134,7 +138,7 @@ const HomePage = () => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers:getAuthHeader(),
         credentials: 'include',
       });
       if (response.ok) {
@@ -199,16 +203,16 @@ const HomePage = () => {
       <Footer theme={activeTheme} />
 
       {isModalOpen && (
-        <GlassModal
-          tasks={tasks}
-          schedules={schedules}
-          onAddTask={handleAddTask}
-          onUpdateTask={handleUpdateTask}
-          onDeleteTask={handleDeleteTask}
-          onClose={() => setModalOpen(false)}
-          theme={activeTheme}
-        />
-      )}
+  <GlassModal
+    tasks={tasks}
+    schedules={schedules}  // Make sure this prop is being passed
+    onAddTask={handleAddTask}
+    onUpdateTask={handleUpdateTask}
+    onDeleteTask={handleDeleteTask}
+    onAddSchedule={handleAddSchedule}
+    onClose={() => setModalOpen(false)}
+  />
+)}
 
       {completedTask && (
         <TaskCompletionModal

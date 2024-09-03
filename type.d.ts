@@ -46,6 +46,7 @@ export type Task = {
   id: string;
   title: string;
   startTime: Date;
+  emoji: string;
   endTime: Date;
   completed: boolean;
   scheduleId: string;
@@ -56,14 +57,14 @@ export type Task = {
 };
 
 export type Upload = {
-  id: string;
-  url: string;
-  type: string;
-  taskId: string;
-  task: Task;
-  userId: string;
-  user: User;
-  createdAt: Date;
+  id?: string;
+  url?: string;
+  type?: string;
+  taskId?: string;
+  task?: Task;
+  userId?: string;
+  user?: User;
+  createdAt?: Date;
 };
 
 export type Reward = {
