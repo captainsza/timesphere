@@ -16,43 +16,39 @@ async function generateUniqueUsername(baseUsername: string): Promise<string> {
 
 export async function POST(request: Request) {
   try {
-    console.log('Received request:', request);
-
-    const { username, password } = await request.json();
-    console.log('Parsed request body:', { username, password });
+    const { username, password, email } = await request.json();
 
     let user = await prisma.user.findUnique({ where: { username } });
-    console.log('Fetched user from database:', user);
 
     if (!user) {
-      console.log('User not found, creating new user');
+      if (!email) {
+        return NextResponse.json({ message: 'Email is required for new users' }, { status: 400 });
+      }
+
       const uniqueUsername = await generateUniqueUsername(username);
       const hashedPassword = await bcrypt.hash(password, 10);
       user = await prisma.user.create({
         data: {
           username: uniqueUsername,
           password: hashedPassword,
+          email,
           points: 0,
           level: 1,
         },
       });
-      console.log('Created new user:', user);
     } else {
       const isPasswordValid = await bcrypt.compare(password, user.password);
-      console.log('Password validation result:', isPasswordValid);
 
       if (!isPasswordValid) {
-        console.log('Invalid password');
         return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
       }
     }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });
-    console.log('Generated JWT token:', token);
 
     const response = NextResponse.json({ 
-      message: 'Login successful',
-      user: { id: user.id, username: user.username }
+      message: user ? 'Login successful' : 'Account created successfully',
+      user: { id: user.id, username: user.username, email: user.email }
     }, { status: 200 });
 
     response.cookies.set('auth_token', token, {
@@ -62,8 +58,6 @@ export async function POST(request: Request) {
       maxAge: 86400, // 1 day
       path: '/',
     });
-
-    console.log('Response with cookie set:', response);
 
     return response;
   } catch (error) {

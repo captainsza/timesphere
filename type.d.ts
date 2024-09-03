@@ -83,6 +83,7 @@ export type AIRecommendation = {
 export type Leaderboard = {
   id: string;
   points: number;
+  email: string;
   rank: number;
   userId: string;
   user: User;

@@ -5,11 +5,11 @@ import { User } from '@/type';
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string, email?: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
-  message: string | null; // Add message property
+  message: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,7 +18,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null); // Add message state
+  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -43,23 +43,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string, email?: string) => {
     setIsLoading(true);
     setError(null);
-    setMessage(null); // Reset message
+    setMessage(null);
 
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, email }),
         credentials: 'include',
       });
 
       if (response.ok) {
         const userData = await response.json();
-        setUser(userData);
-        setMessage('Login successful'); // Set success message
+        setUser(userData.user);
+        setMessage(userData.message);
         router.push('/');
       } else {
         const errorData = await response.json();
